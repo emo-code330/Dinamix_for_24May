@@ -1,0 +1,81 @@
+#include <DynamixelWorkbench.h>
+#include <analogSensor.h>
+
+#define DEVICE_NAME "3"
+
+#define BAUDRATE 1000000
+#define leftdveg 1   //ID
+#define rightdveg 2  //ID
+ analogSensor leftSensor(A3);
+ analogSensor rightSensor(A2);
+ int duration, cm;
+
+int pushButton = 23;
+int trigPin = 14; 
+int echoPin = 13;
+
+DynamixelWorkbench dxl_wb;
+
+void setup() {
+  Serial.begin(57600);
+  pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(pushButton, INPUT_PULLDOWN);
+  pinMode(trigPin, OUTPUT); 
+  pinMode(echoPin, INPUT);
+
+  delay(1000);
+  const char *log;
+
+  uint16_t model_number = 0;
+
+  dxl_wb.init(DEVICE_NAME, BAUDRATE, &log);
+
+  dxl_wb.ping(leftdveg, &model_number, &log);
+  dxl_wb.ping(rightdveg, &model_number, &log);
+
+  dxl_wb.wheelMode(rightdveg, 0, &log);
+  dxl_wb.wheelMode(leftdveg, 0, &log);
+
+
+  for (int count = 0; count < 3; count++) {
+    //dxl_wb.goalPosition(rightdveg, 520);
+    // dxl_wb.goalVelocity(rightdveg, (int32_t)-1023);
+    // Serial.println("kruchy1");
+    //delay(3000);
+    //dxl_wb.goalPosition(rightdveg,480);
+    //dxl_wb.goalVelocity(leftdveg, (int32_t) 1000);
+    // Serial.println("kruchy2");
+    // delay(3000);
+  }
+
+  //dxl_wb.goalVelocity(leftdveg, (int32_t)0);
+  led_on();
+  delay(1000);
+  while (digitalRead(pushButton) == 0){
+    Serial.println(GetDistant());
+    delay(500);
+  }
+  findTower(30);
+  stop();
+  led_off();
+}
+
+
+void loop() {
+
+}
+
+/*void lineMove(int pwm, float kp) {
+  int error = (leftSensor.mapRead()) - (rightSensor.mapRead() + 10);
+  int Psost = error * kp;
+  long leftPwr = pwm - Psost;
+  long rightPwr = pwm + Psost;
+
+  leftPwr = constrain(leftPwr, 0, 1000);
+  rightPwr = constrain(rightPwr, 0, 1000);
+
+
+  dxl_wb.goalVelocity(rightdveg, rightPwr);
+  dxl_wb.goalVelocity(leftdveg, leftPwr * -1);
+}
+*/
