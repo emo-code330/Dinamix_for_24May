@@ -1,0 +1,122 @@
+void lineMove(int pwm, float kp) {
+  int error = (leftSensor.mapRead()) - (rightSensor.mapRead() + 10);
+  int Psost = error * kp;
+  long leftPwr = pwm - Psost;
+  long rightPwr = pwm + Psost;
+  leftPwr = constrain(leftPwr, 0, 1000);
+  rightPwr = constrain(rightPwr, 0, 1000);
+
+  dxl_wb.goalVelocity(rightdveg, rightPwr);
+  dxl_wb.goalVelocity(leftdveg, leftPwr * -1);
+}
+
+
+
+
+void lineMove(int pwr, float kp, int prd) {
+  long currentMillis = millis();
+  while (millis() - currentMillis < prd) lineMove(pwr, kp);
+}
+
+
+
+
+void driveToCross(int pwr, float kp) {
+  while (leftSensor.mapRead() < 50 or rightSensor.mapRead() < 50) lineMove(pwr, kp);
+}
+
+
+
+
+
+void pMove(int error, int pwr, float kp){
+  int Psost = error * kp;
+  long leftPwr = leftPwr - Psost;
+  long rightPwr = rightPwr + Psost;
+  leftPwr = constrain(leftPwr, 0, 1000);
+  rightPwr = constrain(rightPwr, 0, 1000);
+
+  dxl_wb.goalVelocity(rightdveg, rightPwr);
+  dxl_wb.goalVelocity(leftdveg, leftPwr * -1);
+}
+
+
+
+
+void turnLeft(int pwr, float kp, int prd){
+  long currentMillis = millis();
+  while (millis() - currentMillis < prd) pMove(leftSensor.mapRead() - 40, pwr, kp);
+}
+
+
+
+
+void turnRight(int pwr, float kp, int prd){
+  long currentMillis = millis();
+  while (millis() - currentMillis < prd) pMove(40 - rightSensor.mapRead(), pwr, kp);
+}
+
+
+
+
+void stop () {
+  long leftPwr = 0;
+  long rightPwr = 0;
+  dxl_wb.goalVelocity(rightdveg, rightPwr);
+  dxl_wb.goalVelocity(leftdveg, leftPwr * -1);
+  delay(50);
+}
+
+
+
+
+void lineMoveToTower(int dist, int pwr, float kp) {
+  int distance = dist + 10;
+  while (distance > dist or distance < 10) {
+    distance = distance + (GetDistant() - distance) / 2;
+    lineMove(pwr, kp);
+  }
+}
+
+
+
+void findTower(int dist) {
+  dxl_wb.goalVelocity(rightdveg, 250);
+  dxl_wb.goalVelocity(leftdveg, 250);
+  int distance = dist + 10;
+  while (distance > dist or distance < 10) {
+    distance = GetDistant();
+    delay(50);
+  }
+  stop();
+  
+}
+
+
+
+void led_off(){
+  digitalWrite(LED_BUILTIN, HIGH);
+}
+
+
+
+void led_on(){
+  digitalWrite(LED_BUILTIN, LOW);
+}
+
+
+
+
+void around_tower( int rightPwr, int leftPwr, int millis) {
+
+  dxl_wb.goalVelocity(rightdveg, rightPwr);
+  dxl_wb.goalVelocity(leftdveg, leftPwr + 150);
+  delay(millis);
+  while( (leftSensor.mapRead()) - (rightSensor.mapRead()) < 300) {
+    dxl_wb.goalVelocity(rightdveg, rightPwr);
+    dxl_wb.goalVelocity(leftdveg, leftPwr);
+  }
+  delay(50);
+  stop();
+
+}
