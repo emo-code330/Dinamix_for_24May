@@ -1,0 +1,13 @@
+int GetDistant() {
+
+  digitalWrite(trigPin, 0);
+  delayMicroseconds(5);
+  digitalWrite(trigPin, 1);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, 0);
+
+  long duration = pulseIn(echoPin, 1);
+  int cm = (duration / 2) / 29.1;
+  delay(50);
+  return cm;
+}
