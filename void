@@ -1,4 +1,4 @@
-void lineMove(int pwm, float kp) {
+void lineMove(int pwm, float kp) { // движение по линии с датчиками
   int error = (leftSensor.mapRead()) - (rightSensor.mapRead() + 10);
   int Psost = error * kp;
   long leftPwr = pwm - Psost;
@@ -13,7 +13,7 @@ void lineMove(int pwm, float kp) {
 
 
 
-void lineMove(int pwr, float kp, int prd) {
+void lineMove(int pwr, float kp, int prd) { // движение по линии со временем
   long currentMillis = millis();
   while (millis() - currentMillis < prd) lineMove(pwr, kp);
 }
@@ -21,7 +21,7 @@ void lineMove(int pwr, float kp, int prd) {
 
 
 
-void driveToCross(int pwr, float kp) {
+void driveToCross(int pwr, float kp) { // движение на перекрестке
   while (leftSensor.mapRead() < 50 or rightSensor.mapRead() < 50) lineMove(pwr, kp);
 }
 
@@ -29,7 +29,7 @@ void driveToCross(int pwr, float kp) {
 
 
 
-void pMove(int error, int pwr, float kp){
+void pMove(int error, int pwr, float kp){ // движение по линии с одим датчиком
   int Psost = error * kp;
   long leftPwr = leftPwr - Psost;
   long rightPwr = rightPwr + Psost;
@@ -43,7 +43,7 @@ void pMove(int error, int pwr, float kp){
 
 
 
-void turnLeft(int pwr, float kp, int prd){
+void turnLeft(int pwr, float kp, int prd){ // повернуть налево
   long currentMillis = millis();
   while (millis() - currentMillis < prd) pMove(leftSensor.mapRead() - 40, pwr, kp);
 }
@@ -51,7 +51,7 @@ void turnLeft(int pwr, float kp, int prd){
 
 
 
-void turnRight(int pwr, float kp, int prd){
+void turnRight(int pwr, float kp, int prd){ // повернуть вправо
   long currentMillis = millis();
   while (millis() - currentMillis < prd) pMove(40 - rightSensor.mapRead(), pwr, kp);
 }
@@ -59,30 +59,24 @@ void turnRight(int pwr, float kp, int prd){
 
 
 
-void stop () {
-  long leftPwr = 0;
-  long rightPwr = 0;
-  dxl_wb.goalVelocity(rightdveg, rightPwr);
-  dxl_wb.goalVelocity(leftdveg, leftPwr * -1);
+void stop () { //стоп
+  dxl_wb.goalVelocity(rightdveg, 0);
+  dxl_wb.goalVelocity(leftdveg, 0);
   delay(50);
 }
 
-
-
-
-void lineMoveToTower(int dist, int pwr, float kp) {
+void lineMoveToTower(int dist, int pwr, float kp) { // движение до банки
   int distance = dist + 10;
-  while (distance > dist or distance < 10) {
+  while (distance > dist) {
     distance = distance + (GetDistant() - distance) / 2;
-    lineMove(pwr, kp);
+    lineMove(pwr, kp, 6);
   }
 }
 
 
-
-void findTower(int dist) {
-  dxl_wb.goalVelocity(rightdveg, 250);
-  dxl_wb.goalVelocity(leftdveg, 250);
+void findTower(int dist, int leftPwr, int rightPwr) { // найти банку
+  dxl_wb.goalVelocity(rightdveg, rightPwr);
+  dxl_wb.goalVelocity(leftdveg, leftPwr + 150);
   int distance = dist + 10;
   while (distance > dist or distance < 10) {
     distance = GetDistant();
@@ -94,25 +88,28 @@ void findTower(int dist) {
 
 
 
-void led_off(){
+void led_off(){ //выключить диод
   digitalWrite(LED_BUILTIN, HIGH);
 }
 
 
 
-void led_on(){
+void led_on(){ // вкллючить диод
   digitalWrite(LED_BUILTIN, LOW);
 }
 
-
-
-
-void around_tower( int rightPwr, int leftPwr, int millis) {
-
+void Move( int millis, int leftPwr, int rightPwr) {
   dxl_wb.goalVelocity(rightdveg, rightPwr);
-  dxl_wb.goalVelocity(leftdveg, leftPwr + 150);
+  dxl_wb.goalVelocity(leftdveg, leftPwr * -1);
   delay(millis);
-  while( (leftSensor.mapRead()) - (rightSensor.mapRead()) < 300) {
+  stop();
+}
+
+
+void around_tower( int rightPwr, int leftPwr) { // обьехать банку
+
+    Move(880, -650,0);
+    while( (leftSensor.mapRead()) < 50) {
     dxl_wb.goalVelocity(rightdveg, rightPwr);
     dxl_wb.goalVelocity(leftdveg, leftPwr);
   }
@@ -120,3 +117,22 @@ void around_tower( int rightPwr, int leftPwr, int millis) {
   stop();
 
 }
+
+
+
+
+void moveToTower(int distToStop, int distToFind, int leftPwr, int rightPwr){ // движение до банки
+  int distance = distToStop + 10;
+  while (distance > distToStop or distance < 10) {
+    distance += (GetDistant() - distance) * 0.7;
+    if (distance > distToFind) {
+      findTower(distToFind, leftPwr, rightPwr);
+    }
+    else Move(10, 320, 300);
+  }
+}
+
+
+
+
+
