@@ -59,24 +59,35 @@ void setup() {
     Serial.println(distance);
     delay(100);
   }
-  /*moveToTower(20, 250, 50, 300);
+
+
+
+  moveToTower(30, 250, 50, 500);
   stop();
- 
-  */
-  
+  Move(2000, 500, 200);
+  stop();
+  moveToTower(30, 250, 50, 500);
+  stop();
+  while( (leftSensor.mapRead()) < 50) {
+    dxl_wb.goalVelocity(rightdveg, 500);
+    dxl_wb.goalVelocity(leftdveg, 500);
+  stop();
+  }
+   led_off();
+  /*
   lineMoveToTower(40, 600, 2.6);
   stop();
   delay(200);
   around_tower(350, -500);
   stop();
  
- 
+ */
 }
 
 
 void loop() {
-  lineMove(600, 2.6);
-  led_off();
+  //lineMove(600, 2.6);
+ 
 
 
 }
