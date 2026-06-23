@@ -1,3 +1,1 @@
-# Dinamix_for_24May
-Код для тележки.
-Все значения, которые ты используешь -- записывай в комменте, рядом с функцией!!
+https://vpn.ecobuy.ltd/sub/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NzY4NzUzMTAsImV4cCI6MTc4MjkyMzMxMCwic3ViX2lkIjo5MDA2NDMsImNsaWVudCI6IjYyMjNlZTJmLTM3YzgtNDk3MC05YWZjLWFkMjVkOWM5OWYyMyIsInN1YiI6ImU1MThmOTlhLTMzZDMtNDYxMC05OTY2LTJmNDRiNWE3NDRkYyIsInByb2plY3RfaWQiOjEsImNvdW50cnkiOiJhbGwifQ.YMICa5KWRCP1kBVvJ_5LEQQm_YoDxliO27Bkpxfe-IQ
